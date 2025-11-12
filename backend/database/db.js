@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const Connection = ()=>{
-    const url = "mongodb+srv://abhishekgoyal1311_db_user:tqe7UV7tSk2BzYes@filesharingapp.nyakjld.mongodb.net/";
+    const url = process.env.DATABASE_URL;
 
     mongoose.connect(url).then(()=>{
         console.log("Database connected successfully");
