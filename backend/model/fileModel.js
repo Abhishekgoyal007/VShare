@@ -8,6 +8,10 @@ const fileSchema = new mongoose.Schema({
     name:{
         type: String,
         required: true
+    },
+    cloudinaryId:{
+        type: String,
+        required: false // Optional for backward compatibility
     }
 });
 
