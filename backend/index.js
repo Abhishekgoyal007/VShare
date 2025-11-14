@@ -44,17 +44,27 @@ app.use(express.urlencoded({ extended: true }));
 // API Routes - MUST come before static files
 app.use('/api', router);
 
-// Serve static files from frontend dist (for production)
-const frontendDistPath = path.join(__dirname, '../frontend/dist');
-app.use(express.static(frontendDistPath));
-
-// Catch-all route to serve frontend (for SPA routing)
-app.get('*', (req, res) => {
-    res.sendFile(path.join(frontendDistPath, 'index.html'));
+// Root route for health check
+app.get('/', (req, res) => {
+    res.json({ 
+        status: 'ok', 
+        message: 'VShare Backend API is running',
+        endpoints: {
+            upload: '/api/upload',
+            download: '/api/files/:fileId'
+        }
+    });
 });
 
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-})
-
+// Connect to database
 Connection();
+
+// Start server only if not in serverless environment
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(port, () => {
+        console.log(`Server is running on port ${port}`);
+    });
+}
+
+// Export for Vercel serverless
+export default app;
