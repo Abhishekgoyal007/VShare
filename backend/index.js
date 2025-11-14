@@ -18,6 +18,7 @@ const port = process.env.PORT || 9000;
 const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:4173',
+    'https://v-share-ruddy.vercel.app',
     process.env.FRONTEND_URL
 ].filter(Boolean);
 
