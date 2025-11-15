@@ -1,4 +1,5 @@
 import fileModel from "./../model/fileModel.js";
+import https from 'https';
 
 export const UploadController = async (req, res) => {
     try{
@@ -31,19 +32,20 @@ export const DownloadController = async (req, res) => {
             return res.status(404).json({error: "File not found"});
         }
 
-        // Fetch file from Cloudinary and stream it with correct filename
-        const response = await fetch(file.path);
-        
-        if (!response.ok) {
-            throw new Error('Failed to fetch file from Cloudinary');
-        }
-
         // Set headers for download with original filename
         res.setHeader('Content-Disposition', `attachment; filename="${file.name}"`);
-        res.setHeader('Content-Type', response.headers.get('content-type') || 'application/octet-stream');
         
-        // Stream the file
-        response.body.pipe(res);
+        // Stream file from Cloudinary with proper filename
+        https.get(file.path, (cloudinaryResponse) => {
+            // Set content type from Cloudinary response
+            res.setHeader('Content-Type', cloudinaryResponse.headers['content-type'] || 'application/octet-stream');
+            
+            // Pipe the Cloudinary response directly to client
+            cloudinaryResponse.pipe(res);
+        }).on('error', (err) => {
+            console.error("Error fetching from Cloudinary:", err);
+            res.status(500).json({error: "Error downloading file"});
+        });
         
     }catch(err){
         console.error("Download error:", err);
