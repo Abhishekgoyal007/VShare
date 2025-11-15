@@ -31,17 +31,19 @@ export const DownloadController = async (req, res) => {
             return res.status(404).json({error: "File not found"});
         }
 
-        // For Cloudinary URLs, modify to force download with proper filename
+        // For Cloudinary URLs, add fl_attachment flag to force download
         let downloadUrl = file.path;
         
-        // Add fl_attachment flag to force download and preserve filename
         if (downloadUrl.includes('cloudinary.com')) {
-            downloadUrl = downloadUrl.replace('/upload/', `/upload/fl_attachment:${file.name}/`);
+            // Encode filename to handle special characters
+            const encodedFilename = encodeURIComponent(file.name);
+            downloadUrl = downloadUrl.replace('/upload/', `/upload/fl_attachment:${encodedFilename}/`);
         }
         
         res.redirect(downloadUrl);
         
     }catch(err){
+        console.error("Download error:", err);
         return res.status(500).json({error: "Error while downloading file"});
     }
 }
