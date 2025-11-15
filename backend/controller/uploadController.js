@@ -31,16 +31,9 @@ export const DownloadController = async (req, res) => {
             return res.status(404).json({error: "File not found"});
         }
 
-        // For Cloudinary URLs, add fl_attachment flag to force download
-        let downloadUrl = file.path;
-        
-        if (downloadUrl.includes('cloudinary.com')) {
-            // Encode filename to handle special characters
-            const encodedFilename = encodeURIComponent(file.name);
-            downloadUrl = downloadUrl.replace('/upload/', `/upload/fl_attachment:${encodedFilename}/`);
-        }
-        
-        res.redirect(downloadUrl);
+        // Simply redirect to the Cloudinary URL
+        // Users can view or download directly from Cloudinary
+        res.redirect(file.path);
         
     }catch(err){
         console.error("Download error:", err);

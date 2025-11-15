@@ -12,10 +12,22 @@ cloudinary.config({
 // Configure Cloudinary storage for Multer
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
-    params: {
-        folder: 'vshare-uploads', // Folder name in Cloudinary
-        allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx', 'zip', 'rar', 'txt', 'mp4', 'mp3'],
-        resource_type: 'auto', // Automatically detect file type
+    params: async (req, file) => {
+        // Determine resource type based on mimetype
+        const isImage = file.mimetype.startsWith('image/');
+        const isVideo = file.mimetype.startsWith('video/');
+        const isAudio = file.mimetype.startsWith('audio/');
+        
+        let resourceType = 'raw'; // Default for documents, PDFs, etc.
+        if (isImage) resourceType = 'image';
+        if (isVideo) resourceType = 'video';
+        if (isAudio) resourceType = 'video'; // Cloudinary uses 'video' for audio too
+        
+        return {
+            folder: 'vshare-uploads',
+            resource_type: resourceType,
+            allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx', 'zip', 'rar', 'txt', 'mp4', 'mp3', 'wav'],
+        };
     },
 });
 
