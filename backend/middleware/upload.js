@@ -26,7 +26,7 @@ const storage = new CloudinaryStorage({
         return {
             folder: 'vshare-uploads',
             resource_type: resourceType,
-            allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx', 'zip', 'rar', 'txt', 'mp4', 'mp3', 'wav'],
+            // Don't specify allowed_formats for raw type - it accepts anything
         };
     },
 });
