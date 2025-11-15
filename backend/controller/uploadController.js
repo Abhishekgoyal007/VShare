@@ -31,9 +31,19 @@ export const DownloadController = async (req, res) => {
             return res.status(404).json({error: "File not found"});
         }
 
-        // Simply redirect to the Cloudinary URL
-        // Users can view or download directly from Cloudinary
-        res.redirect(file.path);
+        // Fetch file from Cloudinary and stream it with correct filename
+        const response = await fetch(file.path);
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch file from Cloudinary');
+        }
+
+        // Set headers for download with original filename
+        res.setHeader('Content-Disposition', `attachment; filename="${file.name}"`);
+        res.setHeader('Content-Type', response.headers.get('content-type') || 'application/octet-stream');
+        
+        // Stream the file
+        response.body.pipe(res);
         
     }catch(err){
         console.error("Download error:", err);
